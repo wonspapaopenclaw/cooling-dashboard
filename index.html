@@ -1,1 +1,29 @@
-화려하고 재미 있는 웹페이지
+<div id="message">
+불러오는 중...
+</div>
+<script>
+
+const API_URL =
+'https://script.google.com/macros/s/AKfycbx4ra1IHHymOJ_rFNoA1NMI_vG9zO1pp9a0B9TghxOlSuWKwqx3doAEsOPOs2HGw4zu/exec';
+
+async function loadData(){
+
+  const response =
+    await fetch(
+      API_URL + '?t=' + Date.now()
+    );
+
+  const data =
+    await response.json();
+
+  document.getElementById('message')
+    .innerText =
+    data.message || '현재 지시사항 없음';
+
+}
+
+loadData();
+
+setInterval(loadData,30000);
+
+</script>
