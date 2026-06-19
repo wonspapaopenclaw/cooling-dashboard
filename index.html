@@ -6,19 +6,38 @@
 const API_URL =
 'https://script.google.com/macros/s/AKfycbx4ra1IHHymOJ_rFNoA1NMI_vG9zO1pp9a0B9TghxOlSuWKwqx3doAEsOPOs2HGw4zu/exec';
 
+let lastMessage = '';
+
 async function loadData(){
 
-  const response =
-    await fetch(
-      API_URL + '?t=' + Date.now()
+  try{
+
+    const response = await fetch(
+      API_URL + '?nocache=' + Date.now()
     );
 
-  const data =
-    await response.json();
+    const data = await response.json();
 
-  document.getElementById('message')
-    .innerText =
-    data.message || '현재 지시사항 없음';
+    if(data.message !== lastMessage){
+
+      lastMessage = data.message;
+
+      document.getElementById('message')
+        .innerText = data.message;
+
+      console.log('지시문 변경 감지');
+    }
+
+    document.getElementById('status')
+      .innerText =
+      '마지막 확인: ' +
+      new Date().toLocaleTimeString();
+
+  }catch(e){
+
+    console.error(e);
+
+  }
 
 }
 
