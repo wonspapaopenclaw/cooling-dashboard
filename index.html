@@ -49,3 +49,109 @@ h1{font-size:34px}.top-message{font-size:22px}.content{font-size:20px}.section-t
 <div class="section-title">특별 지시</div>
 <div id="specialMessage" class="content"></div>
 </div>
+<script>
+
+const API_URL =
+'https://script.google.com/macros/s/AKfycbx4ra1IHHymOJ_rFNoA1NMI_vG9zO1pp9a0B9TghxOlSuWKwqx3doAEsOPOs2HGw4zu/exec';
+
+function updateClock(){
+
+    document.getElementById("clock").innerText =
+        "현재 시각 : " +
+        new Date().toLocaleString("ko-KR");
+
+    document.getElementById("cardTime").innerText =
+        new Date().toLocaleTimeString("ko-KR",{
+            hour:"2-digit",
+            minute:"2-digit"
+        });
+}
+
+function setText(id,value,emptyText){
+
+    const el = document.getElementById(id);
+
+    value = (value || "").trim();
+
+    if(value){
+        el.innerText = value;
+        el.classList.remove("empty");
+    }else{
+        el.innerText = emptyText;
+        el.classList.add("empty");
+    }
+}
+
+async function loadData(){
+
+    try{
+
+        const response =
+            await fetch(
+                API_URL + "?t=" + Date.now()
+            );
+
+        const data =
+            await response.json();
+
+        if(data.office){
+
+            document.getElementById("cardTemp").innerText =
+                data.office.temperature + "℃";
+
+            document.getElementById("cardHum").innerText =
+                data.office.humidity + "%";
+
+            document.getElementById("cardPred").innerText =
+                data.office.prediction10 + "℃";
+        }
+
+        setText(
+            "topMessage",
+            data.top,
+            "공지사항 없음"
+        );
+
+        setText(
+            "normalMessage",
+            data.normal,
+            "현재 일반 지시 없음"
+        );
+
+        setText(
+            "specialMessage",
+            data.special,
+            "현재 특별 지시 없음"
+        );
+
+        setText(
+            "chillerMessage",
+            data.chiller,
+            "현재 냉온수기 지시 없음"
+        );
+
+        document.getElementById("updated").innerText =
+            "마지막 확인 : " +
+            new Date().toLocaleTimeString();
+
+    }
+    catch(e){
+
+        console.error(e);
+
+        document.getElementById("updated").innerText =
+            "데이터 연결 오류";
+    }
+
+}
+
+updateClock();
+setInterval(updateClock,1000);
+
+loadData();
+setInterval(loadData,10000);
+
+</script>
+
+</body>
+</html>
